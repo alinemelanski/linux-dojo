@@ -1,0 +1,36 @@
+{# extends = "esta página é filha da janela.html" (que é filha da base.html).
+   Só escrevemos o que muda; o resto vem de cima.
+   Por isso usamos comentário do Jinja: um comentário HTML antes do extends
+   sairia ANTES do DOCTYPE e bagunçaria a página! #}
+{% extends "janela.html" %}
+
+{% block titulo %}Desafios · Linux Dojo{% endblock %}
+{% block caminho %}/desafios{% if trilha %}/{{ trilha }}{% endif %}{% endblock %}
+
+{% block conteudo %}
+  <p class="prompt">aluno@dojo:~$ ls desafios/</p>
+
+  <!-- Filtros por trilha -->
+  <nav class="filtros">
+    <a href="/desafios" class="{{ 'ativo' if not trilha }}">Todos</a>
+    {% for chave, t in trilhas.items() %}
+      <a href="/desafios?trilha={{ chave }}" class="{{ 'ativo' if trilha == chave }}">
+        {{ t.icone }} {{ t.titulo }}
+      </a>
+    {% endfor %}
+  </nav>
+
+  <ul class="lista-desafios">
+    {% for d in desafios %}
+      <li>
+        <a href="/desafios/{{ d.id }}">
+          <!-- "d.id in resolvidos" testa se já foi resolvido -->
+          <span>{{ '✅' if d.id in resolvidos else '⬜' }}</span>
+          <span class="tag">{{ trilhas[d.trilha].icone }} {{ d.nivel }}</span>
+          <span class="texto">{{ d.pergunta }}</span>
+          <span class="pts">+{{ d.pontos }}</span>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

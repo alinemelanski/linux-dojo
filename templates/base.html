@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {# Comentário do Jinja: some do HTML final. Cada "block" é um
+     "buraco" que as páginas filhas preenchem. #}
+  <title>{% block titulo %}Linux Dojo{% endblock %}</title>
+
+  {# Fontes de pixel do Google Fonts:
+     - Pixelify Sans: títulos (parece letra de videogame)
+     - VT323: texto corrido (parece terminal antigo) #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  {# A área de trabalho: o fundo de montanhas fica no CSS (body) #}
+  <main class="area">
+    {% block area %}{% endblock %}
+  </main>
+
+  {# Barra de tarefas embaixo, como nos sistemas dos anos 2000 #}
+  <footer class="taskbar">
+    <a class="btn-iniciar" href="/">🐧 Dojo</a>
+    <span class="tarefa">{% block tarefa %}Área de trabalho{% endblock %}</span>
+    <span class="bandeja">
+      <span>⭐ {{ pontos }} pontos</span>
+      <span id="relogio">--:--</span>
+    </span>
+  </footer>
+
+  <script>
+    // Relógio da barra de tarefas (atualiza a cada 30 segundos)
+    function atualizaRelogio() {
+      document.getElementById("relogio").textContent =
+        new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    }
+    atualizaRelogio();
+    setInterval(atualizaRelogio, 30000);
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

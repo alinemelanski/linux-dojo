@@ -1,0 +1,35 @@
+{% extends "janela.html" %}
+
+{% block titulo %}Desafio {{ d.id }} · Linux Dojo{% endblock %}
+{% block caminho %}/desafios/{{ d.trilha }}/{{ d.id }}{% endblock %}
+
+{% block conteudo %}
+  <p class="tag">{{ trilhas[d.trilha].icone }} {{ trilhas[d.trilha].titulo }} · {{ d.nivel }} · +{{ d.pontos }} pts</p>
+  <h1 class="pergunta">{{ d.pergunta }}</h1>
+
+  <!-- method="post": os dados vão no "corpo" do pedido, não na URL.
+       O Flask recebe em request.form["resposta"]. -->
+  <form method="post" class="form-resposta">
+    <label for="resposta" class="prompt">aluno@dojo:~$</label>
+    <!-- maxlength: limite no navegador. Mas ATENÇÃO: isso é fácil de burlar,
+         por isso também cortamos o texto no Python (normalizar). Regra de ouro:
+         validação no front é conforto; validação no back é segurança. -->
+    <input id="resposta" name="resposta" autocomplete="off" maxlength="100" autofocus required>
+    <button type="submit">Enter ↵</button>
+  </form>
+
+  {% if resultado is true %}
+    <div class="feedback certo">
+      <strong>✔ Correto!</strong>
+      <pre>{{ d.explicacao }}</pre>
+    </div>
+  {% elif resultado is false %}
+    <div class="feedback errado">
+      <strong>✘ Ainda não.</strong> Tente de novo! (Dica: confira a escrita.)
+    </div>
+  {% endif %}
+
+  <p class="navegacao">
+    <a href="/desafios?trilha={{ d.trilha }}">← voltar para a trilha</a>
+  </p>
+{% endblock %}

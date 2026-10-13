@@ -1,0 +1,26 @@
+{# janela.html — herda da base e "embrulha" o conteúdo numa janela retrô.
+   Herança em 2 níveis:  base.html  ->  janela.html  ->  desafios.html
+   As páginas filhas continuam usando os blocks: titulo, caminho, conteudo. #}
+{% extends "base.html" %}
+
+{% block tarefa %}📁 {{ self.caminho() }}{% endblock %}
+{# self.caminho() reaproveita o MESMO texto do block "caminho" aqui na barra de tarefas #}
+
+{% block area %}
+  <section class="janela janela-grande">
+    <div class="janela-barra">
+      <span class="janela-titulo">📁 {% block caminho %}/{% endblock %}</span>
+      <div class="janela-botoes">
+        <span aria-hidden="true">_</span>
+        <span aria-hidden="true">□</span>
+        <a href="/" class="btn-x" aria-label="Fechar e voltar à área de trabalho">X</a>
+      </div>
+    </div>
+    <nav class="janela-menu" aria-hidden="true">
+      <span>Arquivo</span><span>Editar</span><span>Exibir</span><span>Ajuda</span>
+    </nav>
+    <div class="janela-corpo">
+      {% block conteudo %}{% endblock %}
+    </div>
+  </section>
+{% endblock %}

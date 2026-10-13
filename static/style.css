@@ -1,0 +1,339 @@
+/* =====================================================================
+   LINUX DOJO — tema pixelizado retrô
+   ---------------------------------------------------------------------
+   OS 4 SEGREDOS DO VISUAL "PIXEL":
+   1. border-radius: 0          -> nada arredondado, tudo quadrado
+   2. bordas grossas e escuras  -> contorno de pixel art
+   3. sombra SEM desfoque       -> box-shadow: 6px 6px 0 (o "0" é o blur)
+   4. image-rendering: pixelated -> ampliar imagens sem borrar
+   ===================================================================== */
+
+/* Variáveis de cor: mude aqui e o site inteiro muda junto */
+:root {
+  --contorno: #1b1b2f;   /* quase preto azulado (contorno de tudo) */
+  --azul: #3a6fd0;       /* barra de título das janelas */
+  --azul-claro: #6e9cf0;
+  --creme: #f4f1e6;      /* fundo das janelas (igual ao das referências) */
+  --creme-escuro: #d8d2bc;
+  --texto: #1b1b2f;
+  --verde: #1e7a2e;
+  --vermelho: #d9453a;
+  --amarelo: #f7c948;
+  --sombra: 6px 6px 0 rgba(27, 27, 47, 0.45);
+
+  --fonte-titulo: "Pixelify Sans", monospace;
+  --fonte-texto: "VT323", monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--fonte-texto);
+  font-size: 21px;            /* a VT323 é "fininha": precisa ser maior */
+  color: var(--texto);
+
+  /* O papel de parede que desenhamos com Python (192x108 pixels!) */
+  background: #84b6f2 url("img/fundo.png") center bottom / cover no-repeat fixed;
+  image-rendering: pixelated; /* amplia SEM borrar: cada pixel vira um quadrado */
+
+  /* deixa espaço para a barra de tarefas não cobrir o conteúdo */
+  padding-bottom: 52px;
+}
+
+/* Imagens de pixel art também precisam do "pixelated" */
+img { image-rendering: pixelated; }
+
+/* ---------------- ÁREA DE TRABALHO ---------------- */
+.area { padding: 16px; }
+
+/* Ícones em coluna à esquerda; quando acaba a altura, abre outra coluna */
+.icones {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(auto-fill, 104px);
+  grid-auto-columns: 96px;
+  gap: 8px;
+  height: calc(100vh - 52px - 32px);
+}
+
+.pasta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 2px;
+  background: transparent;
+  border: 2px dashed transparent;   /* "seleção pontilhada" como nos sistemas antigos */
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: none;
+}
+.pasta img { width: 56px; height: 56px; }   /* 16px ampliado 3.5x */
+.pasta .nome {
+  font-size: 20px;
+  padding: 0 4px;
+  /* sombra "dura" no texto: fica legível em cima de qualquer parte do fundo */
+  text-shadow: 2px 2px 0 var(--contorno);
+}
+.pasta:hover, .pasta:focus-visible {
+  border-color: white;
+  background: rgba(58, 111, 208, 0.35);
+  outline: none;
+}
+.pasta:hover .nome, .pasta:focus-visible .nome { background: var(--azul); }
+
+/* ---------------- JANELA RETRÔ ---------------- */
+.janela {
+  background: var(--creme);
+  border: 3px solid var(--contorno);
+  box-shadow: var(--sombra);
+}
+
+.janela-barra {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px 4px 10px;
+  background: var(--azul);
+  border-bottom: 3px solid var(--contorno);
+  color: white;
+}
+.janela-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Os botões _ □ X */
+.janela-botoes { display: flex; gap: 4px; flex-shrink: 0; }
+.janela-botoes > * {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 24px;
+  background: var(--creme);
+  border: 2px solid var(--contorno);
+  color: var(--texto);
+  font-family: var(--fonte-titulo);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  padding: 0;
+  /* "bisel": borda clara em cima/esquerda e escura embaixo/direita = botão em relevo */
+  box-shadow: inset -2px -2px 0 var(--creme-escuro), inset 2px 2px 0 white;
+}
+.btn-x { background: var(--vermelho) !important; color: white !important; cursor: pointer;
+         box-shadow: inset -2px -2px 0 #a82d25, inset 2px 2px 0 #f48a80 !important; }
+.btn-x:active { box-shadow: inset 2px 2px 0 #a82d25 !important; }  /* parece "afundar" */
+
+.janela-menu {
+  display: flex;
+  gap: 18px;
+  padding: 2px 10px;
+  border-bottom: 2px solid var(--creme-escuro);
+  font-size: 19px;
+}
+
+.janela-corpo { padding: 18px; }
+
+/* Janela grande (páginas de desafio) */
+.janela-grande {
+  width: min(780px, 100%);
+  margin: 8px auto;
+}
+
+/* Janelinha que abre na área de trabalho */
+.janela-popup {
+  position: fixed;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  width: min(540px, calc(100vw - 32px));
+}
+
+/* Tela de terminal (preta, texto verde) dentro da janela */
+.terminal {
+  margin: 8px;
+  padding: 14px;
+  min-height: 150px;
+  background: #101018;
+  border: 3px solid var(--contorno);
+  color: #5cff7a;
+  font-family: var(--fonte-texto);
+  font-size: 22px;
+  white-space: pre-wrap;
+}
+
+/* ---------------- BARRA DE TAREFAS ---------------- */
+.taskbar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px;
+  background: var(--azul);
+  border-top: 3px solid var(--contorno);
+  box-shadow: inset 0 3px 0 var(--azul-claro);
+  color: white;
+}
+.btn-iniciar {
+  padding: 4px 14px;
+  background: #3fa34d;
+  border: 3px solid var(--contorno);
+  color: white;
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  font-size: 18px;
+  text-decoration: none;
+  box-shadow: inset -3px -3px 0 #2a7a35, inset 3px 3px 0 #7cd987;
+  white-space: nowrap;
+}
+.btn-iniciar:active { box-shadow: inset 3px 3px 0 #2a7a35; }
+.tarefa {
+  flex: 1;
+  min-width: 0;
+  max-width: 300px;
+  padding: 3px 10px;
+  background: var(--azul-claro);
+  border: 2px solid var(--contorno);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 19px;
+}
+.bandeja {
+  margin-left: auto;
+  display: flex;
+  gap: 14px;
+  padding: 3px 10px;
+  background: #2b57a8;
+  border: 2px solid var(--contorno);
+  white-space: nowrap;
+  font-size: 19px;
+}
+
+/* ---------------- PÁGINAS DE DESAFIO ---------------- */
+.prompt { color: var(--verde); margin: 0 0 12px; }
+
+/* Botões de filtro: "abas" retrô */
+.filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.filtros a {
+  padding: 2px 12px;
+  background: var(--creme);
+  border: 2px solid var(--contorno);
+  color: var(--texto);
+  text-decoration: none;
+  box-shadow: 3px 3px 0 var(--contorno);
+}
+.filtros a:hover { background: white; }
+.filtros a.ativo { background: var(--amarelo); }
+.filtros a:active { transform: translate(3px, 3px); box-shadow: none; }  /* "aperta" */
+
+.lista-desafios {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: white;
+  border: 2px solid var(--contorno);
+}
+.lista-desafios a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-bottom: 2px dashed var(--creme-escuro);
+  color: var(--texto);
+  text-decoration: none;
+  line-height: 1.1;
+}
+.lista-desafios li:last-child a { border-bottom: none; }
+.lista-desafios a:hover { background: var(--azul); color: white; }
+.lista-desafios a:hover .tag { color: white; }
+.lista-desafios .texto { flex: 1; }
+.tag { color: #6b6450; font-size: 18px; white-space: nowrap; }
+.pts {
+  font-family: var(--fonte-titulo);
+  font-size: 15px;
+  padding: 0 6px;
+  background: var(--amarelo);
+  border: 2px solid var(--contorno);
+  color: var(--texto);
+}
+
+.pergunta {
+  font-family: var(--fonte-titulo);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.3;
+  margin: 6px 0 18px;
+}
+
+/* O campo de resposta parece um terminal */
+.form-resposta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px;
+  background: #101018;
+  border: 3px solid var(--contorno);
+}
+.form-resposta .prompt { margin: 0; color: #5cff7a; }
+.form-resposta input {
+  flex: 1;
+  min-width: 140px;
+  background: transparent;
+  border: none;
+  color: white;
+  font: inherit;
+  font-size: 22px;
+  outline: none;
+  caret-color: #5cff7a;
+}
+.form-resposta button {
+  padding: 2px 12px;
+  background: var(--amarelo);
+  border: 2px solid var(--contorno);
+  color: var(--texto);
+  font-family: var(--fonte-titulo);
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: inset -2px -2px 0 #c99a1e, inset 2px 2px 0 #fff1a8;
+}
+.form-resposta button:active { box-shadow: inset 2px 2px 0 #c99a1e; }
+
+.feedback {
+  margin-top: 18px;
+  padding: 10px 14px;
+  border: 3px solid var(--contorno);
+  box-shadow: 4px 4px 0 var(--contorno);
+}
+.feedback strong { font-family: var(--fonte-titulo); }
+.feedback pre { white-space: pre-wrap; margin: 6px 0 0; font: inherit; }
+.certo  { background: #c8f5c0; }
+.errado { background: #ffd2cc; }
+
+.navegacao { margin-bottom: 0; }
+.navegacao a { color: var(--azul); }
+
+/* ---------------- CELULAR ---------------- */
+@media (max-width: 600px) {
+  .icones {
+    grid-auto-flow: row;                    /* no celular, ícones em grade normal */
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    grid-template-rows: none;
+    height: auto;
+  }
+  .janela-menu { display: none; }
+  .tarefa { display: none; }
+  .lista-desafios a { flex-wrap: wrap; }
+}

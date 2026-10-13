@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block area %}
+  {# Ícones da área de trabalho, em coluna à esquerda (como nas referências) #}
+  <div class="icones">
+    {% for pasta in pastas %}
+      {% if pasta.link %}
+        {# Pasta com página própria: vira um link de verdade #}
+        <a class="pasta" href="{{ pasta.link }}">
+          <img src="{{ url_for('static', filename='img/pasta-' ~ pasta.cor ~ '.png') }}" alt="">
+          <span class="nome">/{{ pasta.nome }}</span>
+        </a>
+      {% else %}
+        {# Pasta sem página ainda: abre a janelinha de terminal #}
+        <button class="pasta" data-nome="{{ pasta.nome }}" data-desc="{{ pasta.descricao }}">
+          <img src="{{ url_for('static', filename='img/pasta-' ~ pasta.cor ~ '.png') }}" alt="">
+          <span class="nome">/{{ pasta.nome }}</span>
+        </button>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {# O ~ (til) no Jinja junta textos: 'pasta-' ~ 'verde' ~ '.png' = 'pasta-verde.png' #}
+
+  {# Janela-terminal que abre ao clicar numa pasta sem link (começa escondida) #}
+  <section class="janela janela-popup" id="janela" hidden>
+    <div class="janela-barra">
+      <span class="janela-titulo" id="janela-titulo">/</span>
+      <div class="janela-botoes">
+        <span aria-hidden="true">_</span>
+        <span aria-hidden="true">□</span>
+        <button class="btn-x" id="fechar" aria-label="Fechar">X</button>
+      </div>
+    </div>
+    <pre class="terminal" id="janela-conteudo"></pre>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    const janela = document.getElementById("janela");
+    // Só os <button> abrem a janela; os <a> já navegam sozinhos
+    document.querySelectorAll("button.pasta").forEach(function (botao) {
+      botao.addEventListener("click", function () {
+        const nome = botao.dataset.nome;
+        document.getElementById("janela-titulo").textContent = "💻 terminal — /" + nome;
+        document.getElementById("janela-conteudo").textContent =
+          "aluno@dojo:~$ cd /" + nome + "\n" + botao.dataset.desc + "\n\naluno@dojo:/" + nome + "$ _";
+        janela.hidden = false;
+      });
+    });
+    document.getElementById("fechar").addEventListener("click", function () {
+      janela.hidden = true;
+    });
+  </script>
+{% endblock %}
