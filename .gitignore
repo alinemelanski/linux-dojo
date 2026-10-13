@@ -1,0 +1,18 @@
+# .gitignore — arquivos que o Git deve IGNORAR (não vão para o GitHub)
+
+# Ambiente virtual: é pesado e cada pessoa cria o seu com "python -m venv venv"
+venv/
+.venv/
+
+# Cache do Python: gerado sozinho quando o código roda
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# SEGURANÇA: arquivos com senhas/chaves NUNCA vão para o GitHub
+.env
+
+# Configurações pessoais do editor e do sistema
+.vscode/
+.DS_Store
+Thumbs.db
